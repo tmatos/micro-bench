@@ -54,7 +54,7 @@ void filtro_na_cpu( int* entrada, int* saida, int qtde_nums) {
     int j; // indice para iteracao no buffer circular
     int k; // indice para iteracao nos coeficientes
 
-    int posOldest; // posicao no buffer da amostra mais antiga
+    int older; // posicao no buffer da amostra mais antiga
 
     int s; // indice para as amostras da entrada
     
@@ -78,14 +78,14 @@ void filtro_na_cpu( int* entrada, int* saida, int qtde_nums) {
         k = 0;          
         acc = 0;
 
-        posOldest = (i+1) % N;
+        older = (i == N-1) ? 0 : i+1;
         
-        for( j = posOldest ; j < N ; ++j , ++k )
+        for( j = older ; j < N ; ++j , ++k )
         {
           acc += (long)h[k] * (long)buff[j]; 
         }
         
-        for( j = 0 ; j < posOldest ; ++j , ++k )
+        for( j = 0 ; j < older ; ++j , ++k )
         {
           acc += (long)h[k] * (long)buff[j]; 
         }
