@@ -103,6 +103,9 @@ void filtro_na_cpu( int* entrada, int* saida, int qtde_nums) {
 #define QTD_NUMS 128
 
 #define ENTRADA_DAT "entrada.dat"
+#define SAIDA_DAT "saida.dat"
+
+#define SAVE_OUTPUT
 
 int main()
 {
@@ -168,6 +171,25 @@ int main()
     #ifndef VERBOSO
 
   	printf("%ld\n", tempo );
+
+    #endif
+
+    #ifdef SAVE_OUTPUT
+
+    FILE* fp_saida = fopen(SAIDA_DAT, "w");
+
+    if(!fp_saida)
+    {
+        printf("Nao foi possivel gravar o arquivo \"%s\".\n", SAIDA_DAT);
+        exit(10);
+    }
+
+    for(i=0 ; i<QTD_NUMS ; i++)
+    {
+        fprintf(fp_saida, "%i\n", resultados[i] );
+    }
+
+    fclose(fp_saida);
 
     #endif
 
