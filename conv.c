@@ -45,11 +45,7 @@ int h_imp[N] = {
 	0
 };
 
-
-#define u32 unsigned int
-#define u64 unsigned long
-
-void filtro_na_cpu( u32* entrada, u32* saida, int qtde_nums) {
+void filtro_na_cpu( int* entrada, int* saida, int qtde_nums) {
 
 	int buff[N]; // buffer circular para guardar as amostras
     
@@ -60,7 +56,7 @@ void filtro_na_cpu( u32* entrada, u32* saida, int qtde_nums) {
 
     int posOldest; // posicao no buffer da amostra mais antiga
 
-    int s;
+    int s; // indice para as amostras da entrada
     
     long acc; // acumulador usado para a convolucao
     
@@ -75,9 +71,9 @@ void filtro_na_cpu( u32* entrada, u32* saida, int qtde_nums) {
 
     for ( s = 0 ; s < qtde_nums ; )
     {
-      for ( i = 0 ; i < N ; ++i )
+      for ( i = 0 ; i < N && s < qtde_nums ; ++i )
       {        
-        buff[i] = (int) entrada[s];
+        buff[i] = entrada[s];
         
         k = 0;          
         acc = 0;
@@ -96,46 +92,52 @@ void filtro_na_cpu( u32* entrada, u32* saida, int qtde_nums) {
 
         acc = acc + 0x0000000040000000; // para arredondamento
 
-        saida[s] = (u32) (acc >> 31); // converte para os 32 bits
+        saida[s] = (int) (acc >> 31); // converte para os 32 bits
 
         s++;
-
-        if(s < qtde_nums) break;
       }
 
     }
 }
 
+#define QTD_NUMS 128
+
+#define ENTRADA_DAT "entrada.dat"
+
 int main()
 {
-    unsigned int qtde_nums = 128;
+    FILE* fp_entrada = fopen(ENTRADA_DAT, "r");
 
-    FILE * fp_entrada = fopen("entrada.dat", "r");
-
-    if(!fp_entrada) {
-        printf("Fornecer o arquivo \"entrada.dat\".\n");
+    if(!fp_entrada)
+    {
+        printf("Fornecer o arquivo \"%s\".\n", ENTRADA_DAT);
         exit(1);
     }
 
     int i;
 
-    int numeros[qtde_nums];
-    u32 resultados[qtde_nums];
+    int numeros[QTD_NUMS];
+    int resultados[QTD_NUMS];
 
-    for(i=0 ; i<qtde_nums ; i++) {
-        fscanf(fp_entrada, "%i", (numeros+i) );
+    for(i=0 ; i<QTD_NUMS ; i++)
+    {
+        if( fscanf(fp_entrada, "%i", numeros+i) != 1 )
+        {
+            printf("Erro na leitura do arquivo \"%s\".\n", ENTRADA_DAT);
+            exit(2);
+        }
+
+        resultados[i] = 0;
     }
 
-    for(i=0 ; i<qtde_nums ; i++) {
-        resultados[i] = (u32)0;
-    }
+    fclose(fp_entrada);
 
   	struct timeval inicio;
   	struct timeval fim;
 
   	gettimeofday(&inicio, NULL);  /// T_zero
 
-  	filtro_na_cpu( (u32*)numeros, resultados, qtde_nums);
+  	filtro_na_cpu( numeros, resultados, QTD_NUMS );
 
   	gettimeofday(&fim, NULL);  /// T_final
 
@@ -147,18 +149,19 @@ int main()
 
     printf("Entrada = ");
 
-    for(i=0 ; i<qtde_nums ; ++i) {
-        printf("%i ; ", ((int*)numeros)[i] );
+    for(i=0 ; i<QTD_NUMS ; i++)
+    {
+        printf("%i ; ", numeros[i] );
     }
 
     printf("\n\nSaida = ");
 
-    for(i=0 ; i<qtde_nums ; ++i) {
-        printf("%i ; ", ((int*)resultados)[i] );
+    for(i=0 ; i<QTD_NUMS ; i++)
+    {
+        printf("%i ; ", resultados[i] );
     }
 
-  	printf("\n\nTEMPO GASTO (CPU): %ld (us)\n", tempo );
-    printf("\n\n");
+  	printf("\n\nTEMPO GASTO (CPU): %ld (us)\n\n", tempo );
 
     #endif
 
@@ -168,8 +171,5 @@ int main()
 
     #endif
 
-    fclose(fp_entrada);
-    
-    return 0;
+    exit(0);
 }
-
