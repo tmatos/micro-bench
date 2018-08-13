@@ -2,7 +2,7 @@
 
 ARQUIVO_MEDIDAS=medidas_cpu.txt
 
-# REALIZAR AS MEDIDAS (em microsegundos)
+# REALIZAR AS MEDIDAS (em nanosegundos)
 
 rm -f $ARQUIVO_MEDIDAS
 
@@ -24,7 +24,7 @@ do
     ((count++))
 done
 
-echo "Media (us) ="
+echo "Media (ns) ="
 awk 'BEGIN { print ('$total'/'$count') }'
 #echo "scale=2; $total / $count" | bc
 

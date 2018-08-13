@@ -135,16 +135,16 @@ int main()
 
     fclose(fp_entrada);
 
-  	struct timeval inicio;
-  	struct timeval fim;
+  	struct timespec inicio;
+  	struct timespec fim;
 
-  	gettimeofday(&inicio, NULL);  /// T_zero
+    clock_gettime(CLOCK_REALTIME, &inicio);  /// T_zero
 
   	filtro_na_cpu( numeros, resultados, QTD_NUMS );
 
-  	gettimeofday(&fim, NULL);  /// T_final
+    clock_gettime(CLOCK_REALTIME, &fim);  /// T_final
 
-    long tempo = ((fim.tv_sec * 1000000 + fim.tv_usec) - (inicio.tv_sec * 1000000 + inicio.tv_usec));
+    long tempo = ((fim.tv_sec * 1000000000 + fim.tv_nsec) - (inicio.tv_sec * 1000000000 + inicio.tv_nsec));
 
     #ifdef VERBOSO
 
@@ -164,7 +164,13 @@ int main()
         printf("%i ; ", resultados[i] );
     }
 
-  	printf("\n\nTEMPO GASTO (CPU): %ld (us)\n\n", tempo );
+    struct timespec tp;
+    clock_getres(CLOCK_REALTIME, &tp);
+    long precisao = (tp.tv_sec * 1000000000 + tp.tv_nsec);
+
+    printf("\n\n");
+  	printf("TEMPO GASTO (CPU): %ld (ns)\n", tempo );
+    printf("   PRECISAO (CPU): %ld (ns)\n\n", precisao );
 
     #endif
 
