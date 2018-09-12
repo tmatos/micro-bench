@@ -9,6 +9,12 @@
 
 #define N 13   // qtd de coeficientes
 
+#ifdef __arm__
+	#define ACC_TYPE long long 
+#else
+	#define ACC_TYPE long 
+#endif
+
 //#define VERBOSO
 
 // os coeficientes (fpb)
@@ -58,7 +64,7 @@ void filtro_na_cpu( int* entrada, int* saida, int qtde_nums) {
 
     int s; // indice para as amostras da entrada
     
-    long acc; // acumulador usado para a convolucao
+    ACC_TYPE acc; // acumulador usado para a convolucao
     
     // set bufffer para valor inicial
     for( i = 0 ; i < N ; ++i )
@@ -82,12 +88,12 @@ void filtro_na_cpu( int* entrada, int* saida, int qtde_nums) {
         
         for( j = older ; j < N ; ++j , ++k )
         {
-          acc += (long)h[k] * (long)buff[j]; 
+          acc += (ACC_TYPE)h[k] * (ACC_TYPE)buff[j]; 
         }
         
         for( j = 0 ; j < older ; ++j , ++k )
         {
-          acc += (long)h[k] * (long)buff[j]; 
+          acc += (ACC_TYPE)h[k] * (ACC_TYPE)buff[j]; 
         }
 
         acc = acc + 0x0000000040000000; // para arredondamento
