@@ -7,7 +7,7 @@
 #
 
 app: conv.c
-	$(CC) -o conv_cpu conv.c -O5
+	$(CC) -o conv_cpu conv.c -O5 -Wall -Wpedantic
 
 clean:
 	rm -rf *.o conv_cpu
