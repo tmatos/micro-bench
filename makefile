@@ -6,8 +6,11 @@
 #  source /opt/yocto/poky/1.3.2/environment-setup-core2-poky-linux
 #
 
-app: conv.c
-	$(CC) -o conv_cpu conv.c -O5 -Wall -Wpedantic
+TARGET = conv_cpu
 
+all: conv.c
+	$(CC) -o $(TARGET) $^ -O2 -Wall -Wpedantic
+
+.PHONY: clean
 clean:
-	rm -rf *.o conv_cpu
+	rm -rf *.o $(TARGET)
